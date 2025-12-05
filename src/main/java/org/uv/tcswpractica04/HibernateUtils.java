@@ -1,17 +1,27 @@
 package org.uv.tcswpractica04;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateUtils {
+
+    private HibernateUtils() {
+    }
+
     private static final SessionFactory sessionFactory;
+    private static final Logger logger = Logger.getLogger(HibernateUtils.class.getName());
 
     static {
         try {
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+            Configuration cfg = new Configuration().configure();
+            cfg.addAnnotatedClass(Empleados.class);
+            cfg.addAnnotatedClass(Departamentos.class);
+            sessionFactory = cfg.buildSessionFactory();
+            logger.log(Level.INFO, "SessionFactory creada correctamente");
         } catch (Throwable ex) {
-            System.err.println("Initial SessionFactory creation failed: " + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -25,6 +35,7 @@ public class HibernateUtils {
     }
 
     public static void shutdown() {
+        logger.log(Level.INFO, "Cerrando SessionFactory");
         getSessionFactory().close();
     }
 }

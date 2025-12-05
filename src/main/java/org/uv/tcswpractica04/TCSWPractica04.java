@@ -1,49 +1,33 @@
 package org.uv.tcswpractica04;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class TCSWPractica04 {
 
     public static void main(String[] args) {
-        Session session = null;
-        Transaction tx = null;
+        Logger log = Logger.getLogger(TCSWPractica04.class.getName());
+        log.log(Level.INFO, "Hello World");
 
-        try {
-            session = HibernateUtils.getSession();
-            tx = session.beginTransaction();
+        try (Session session = HibernateUtils.getSession()) {
+            Transaction t = session.beginTransaction();
 
-            // Intentamos obtener un departamento con clave = 1
-            Departamento d1 = session.get(Departamento.class, 1L);
-
+            Departamentos d1 = session.get(Departamentos.class, 1L);
             if (d1 == null) {
-                d1 = new Departamento();
-                d1.setNombre("Sistema");
-                session.save(d1); // guarda el departamento nuevo
-                // session.flush() no es necesario aquí, commit lo hará
-            } else {
-                d1.setNombre("Otro");
-                session.update(d1);
+                throw new IllegalStateException("No existe el departamento con clave=1");
             }
 
-            // Crear empleado y asociarlo al departamento d1
             Empleados emp = new Empleados();
-            emp.setNombre("Juan");
-            emp.setDireccion("Av Benustiano Carranza");
-            emp.setTelefono("2721674323");
+            emp.setNombre("Gabrel");
+            emp.setDireccion("Av. 11");
+            emp.setTelefono("7777777");
             emp.setDepto(d1);
 
-            session.save(emp); // persistir empleado nuevo
-
-            tx.commit();
-            System.out.println("Se guardó correctamente.");
-
-        } catch (Exception ex) {
-            if (tx != null) tx.rollback();
-            ex.printStackTrace();
-        } finally {
-            if (session != null) session.close();
-            HibernateUtils.shutdown();
+            session.save(emp);
+            t.commit();
+            log.log(Level.INFO, "Empleado insertado", emp.getClave());
         }
     }
 }

@@ -4,35 +4,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "empleado2")
-public class Empleados implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@Table(name = "empleados2")
+public class Empleados {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "empleado2_clave_seq")
-    @SequenceGenerator(name = "empleado2_clave_seq",
-            sequenceName = "empleado2_clave_seq",
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "empleados2_clave_seq")
+    @SequenceGenerator(
+            name = "empleados2_clave_seq",
+            sequenceName = "empleados2_clave_seq",
             initialValue = 1,
-            allocationSize = 1)
+            allocationSize = 1
+    )
     @Column(name = "clave")
     private Long clave;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre", nullable = false, length = 120)
     private String nombre;
 
-    @Column(name = "direccion")
+    @Column(name = "direccion", length = 200)
     private String direccion;
 
-    @Column(name = "telefono")
+    @Column(name = "telefono", length = 40)
     private String telefono;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "departamento_id") // FK en la tabla empleado2
-    private Departamento depto;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "depto_clave",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_empleados2_depto")
+    )
+    private Departamentos depto;
 
-    // Getters y setters
+    public Empleados() {
+    }
+
     public Long getClave() {
         return clave;
     }
@@ -65,11 +70,11 @@ public class Empleados implements Serializable {
         this.telefono = telefono;
     }
 
-    public Departamento getDepto() {
+    public Departamentos getDepto() {
         return depto;
     }
 
-    public void setDepto(Departamento depto) {
+    public void setDepto(Departamentos depto) {
         this.depto = depto;
     }
 }
